@@ -1,7 +1,7 @@
 package runner
 
 import (
-	"io/ioutil"
+	"io"
 	"net/url"
 	"os"
 
@@ -10,7 +10,7 @@ import (
 
 func (o *Options) validate() {
 	if isStdin() {
-		b, e := ioutil.ReadAll(os.Stdin)
+		b, e := io.ReadAll(os.Stdin)
 		if e != nil {
 			errors.Exit(e.Error())
 		}
@@ -18,7 +18,7 @@ func (o *Options) validate() {
 	} else if o.URL != "" {
 		o.Target = o.URL
 	} else if o.List != "" {
-		f, e := ioutil.ReadFile(o.List)
+		f, e := os.ReadFile(o.List)
 		if e != nil {
 			errors.Exit(e.Error())
 		}
