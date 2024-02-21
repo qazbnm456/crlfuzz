@@ -27,7 +27,19 @@ func New(options *Options) {
 
 	for _, line := range strings.Split(options.Target, "\n") {
 		if isURL(line) {
-			for _, url := range crlfuzz.GenerateURL(line) {
+			urls, e := crlfuzz.GenerateURL(line)
+
+			if e != nil {
+				if !options.Silent {
+					if options.Verbose {
+						errors.Show(e.Error())
+					} else {
+						errors.Show(line)
+					}
+				}
+			}
+
+			for _, url := range urls {
 				jobs <- url
 			}
 		}

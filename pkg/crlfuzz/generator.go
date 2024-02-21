@@ -1,27 +1,38 @@
 package crlfuzz
 
 import (
+	"errors"
 	"fmt"
+	"net/url"
 	"regexp"
 	"strconv"
 	"strings"
 )
 
 // GenerateURL should generate for potential vulnerability URLs
-func GenerateURL(u string) []string {
-	var url []string
+func GenerateURL(u string) ([]string, error) {
+	var generated_urls []string
 
-	if !strings.HasSuffix(u, "/") {
-		u += "/"
+	parsed_url, e := url.Parse(u)
+
+	if len(parsed_url.Path) == 0 {
+		parsed_url.Path = "/"
+	}
+
+	fragment := parsed_url.Fragment
+	parsed_url.Fragment = ""
+
+	if e != nil {
+		return nil, errors.New(e.Error())
 	}
 
 	for _, a := range appendList {
 		for _, e := range escapeList {
-			url = append(url, fmt.Sprint(u, a, DecodeUnicode(e), keyHeader, "%3a%20", valHeader))
+			generated_urls = append(generated_urls, fmt.Sprint(parsed_url, a, DecodeUnicode(e), keyHeader, "%3a%20", valHeader, "#", fragment))
 		}
 	}
 
-	return url
+	return generated_urls, nil
 }
 
 func DecodeUnicode(s string) string {
