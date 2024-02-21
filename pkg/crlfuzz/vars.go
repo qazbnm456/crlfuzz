@@ -5,7 +5,8 @@ var (
 		"",
 		"crlfuzz",
 		"?crlfuzz=",
-		"#",
+		// We use the fragment in another project to differentiate other URLs, so we omit this one here
+		// "#",
 	}
 
 	escapeList = [...]string{
